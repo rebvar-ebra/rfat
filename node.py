@@ -1,13 +1,45 @@
 from datetime import date
+from email import message
 import threading
 from threading import Lock
 import socket
-import json
-import hashlib
-import time
-import sys
 
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+import socket
+
+from message_pass import *
+
+
+class Client:
+    def __init__(self, server_port=10000):
+        self.server_port = server_port
+
+    def start(self):
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        server_address = ('localhost', self.server_port)
+        print(f"connecting to {server_address[0]} port {server_address[1]}")
+        self.sock.connect(server_address)
+
+        running = True
+        while running:
+            try:
+                #message = input("Type your message:\n")
+                message="This is our message.This is our messageThis is our messageThis is our messageThis is our message"
+                print(f"sending {message}")
+
+                send_message(self.sock, message.encode('utf-8'))
+
+                data = receive_message(self.sock)
+                print(f"received {data}")
+            except:
+                print(f"closing socket")
+                self.sock.close()
+                running = False
+                
+c=Client()
+c.start()
+
+""" sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # Connect the socket to the port where the server is listening
 server_address = ('localhost', 10000)
@@ -35,23 +67,4 @@ finally:
     print('closing socket')
     sock.close()
 
-""" ser=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server_address=('localhost',10000)
-print('connecting to {} port {}'.format(*server_address))
-try:
-    message = b'This is our message. It is very long but will only be transmitted in chunks of 16 at a time'
-    
-    #print(f"sending   {message}")
-    print('sending {!r}'.format(message))
-    ser.sendall(message)
-    amount_recive= 0
-    amount_expect=len(message)
-    
-    while amount_recive < amount_expect:
-        data=ser.recv(16)
-        amount_recive+=len(data)
-        print(f"recived {data}")
-        
-finally:
-    print(f"Closing socket")
-    ser.close() """
+ """
