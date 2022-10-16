@@ -19,13 +19,14 @@ class Server:
     def __init__(self,name,port=10000):
         self.port=port
         self.name=name
-        self.kvs=KeyValueStore()
+        self.kvs=KeyValueStore(server_name=name)
         #self.catch_up(self.kvs)
+        self.kvs.catch_up()
         
     def destination_addresses(self):
         #other_servers = {k: (v[0], int(v[1])) for (k, v) in server_nodes().items() if k != self.name}
         other_servers = {k: v for (k, v) in server_nodes().items() if k != self.name}
-        print(str(list(other_servers.values())))
+        #print(str(list(other_servers.values())))
         return list(other_servers.values())
     
     def address_of(self,server_name):
