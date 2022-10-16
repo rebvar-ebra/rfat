@@ -3,6 +3,7 @@ myserver localhost 10000
 myserver localhost 10000
 myserver localhost 10000
 myserver localhost 10000
-yourserver localhost 10001rebvar localhost 10000
-rebvar localhost 10000
-rebvar localhost 10000
+yourserver localhost 10001
+@ localhost 10000
+@ localhost 10000
+@ localhost 10000
