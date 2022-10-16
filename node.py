@@ -1,11 +1,4 @@
-from datetime import date
-from email import message
-import threading
-from threading import Lock
 import socket
-
-import socket
-
 from message_pass import *
 
 
@@ -21,7 +14,7 @@ class Client:
         self.sock.connect(server_address)
 
         running = True
-        while running:
+        while running :
             try:
                 #message = input("Type your message:\n")
                 message="This is our message.This is our messageThis is our messageThis is our messageThis is our message"

@@ -8,3 +8,6 @@ yourserver localhost 10001
 @ localhost 10000
 @ localhost 10000
 @ localhost 10000
+@ localhost 10000
+@ localhost 10000
+  localhost 10000
