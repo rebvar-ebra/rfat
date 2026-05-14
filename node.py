@@ -8,56 +8,45 @@ class Client:
 
     def start(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
         server_address = ('localhost', self.server_port)
-        print(f"connecting to {server_address[0]} port {server_address[1]}")
-        self.sock.connect(server_address)
+        print(f"Connecting to {server_address[0]} port {server_address[1]}")
+        try:
+            self.sock.connect(server_address)
+        except Exception as e:
+            print(f"Could not connect to server: {e}")
+            return
 
-        running = True
-        while running :
+        print("Connection established. Commands: set <key> <value>, get <key>, delete <key>, show, youre_the_leader, show_log, quit")
+        
+        while True:
             try:
-                #message = input("Type your message:\n")
-                message="This is our message.This is our messageThis is our messageThis is our messageThis is our message"
-                print(f"sending {message}")
+                message = input("rfat> ").strip()
+                if not message:
+                    continue
+                if message.lower() in ["quit", "exit"]:
+                    break
 
-                send_message(self.sock, message.encode('utf-8'))
+                # The server expects "client@command" format for client requests
+                formatted_message = f"client@{message}"
+                send_message(self.sock, formatted_message.encode('utf-8'))
 
                 data = receive_message(self.sock)
-                print(f"received {data}")
-            except:
-                print(f"closing socket")
-                self.sock.close()
-                running = False
-                
-c=Client()
-c.start()
+                if data:
+                    print(f"Response: {data.decode('utf-8')}")
+            except EOFError:
+                break
+            except Exception as e:
+                print(f"Error: {e}")
+                break
+        
+        print("Closing connection.")
+        self.sock.close()
 
-""" sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-# Connect the socket to the port where the server is listening
-server_address = ('localhost', 10000)
-print('connecting to {} port {}'.format(*server_address))
-sock.connect(server_address)
-
-try:
-
-    # Send data
-    message = b'This is our message.This is our messageThis is our messageThis is our messageThis is our message '
-    #message= input("Type your message:\n")
-    print('sending {!r}'.format(message))
-    sock.sendall(message)
-
-    # Look for the response
-    amount_received = 0
-    amount_expected = len(message)
-
-    while amount_received < amount_expected:
-        data = sock.recv(1024)
-        amount_received += len(data)
-        print('received {!r}'.format(data))
-
-finally:
-    print('closing socket')
-    sock.close()
-
- """
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(description="Start an interactive KVS client.")
+    parser.add_argument("--port", type=int, default=10000, help="Server port to connect to (default: 10000)")
+    
+    args = parser.parse_args()
+    c = Client(server_port=args.port)
+    c.start()

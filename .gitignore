@@ -1,0 +1,23 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Project-specific logs
+*_log.txt
+server_registry.txt
+
+# Environment variables
+.env
+
+# Local configuration
+address.json
+
+# Scratch files and test artifacts
+scratch/
+commands.txt
+command.json
+
+# IDEs
+.vscode/
+.idea/

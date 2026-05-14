@@ -12,8 +12,8 @@ class KeyValueStore:
         self.data={}
         self.log=[]
         
-    def get(self,key):
-        return self.data[key,'']
+    def get(self, key):
+        return self.data.get(key, 'Key not found')
     
     
     def set(self,key,value):
@@ -52,11 +52,11 @@ class KeyValueStore:
                         self.write_to_log(string_operation)
                     self.set(operands[key],value)
                     response=f"key {operands[key]} set to {value}"
-            elif operands[command] ==" delete":
+            elif operands[command] == "delete":
                     if write:
                         self.write_to_log(string_operation)
                     self.delete(operands[key])
-                    response=f"key {key}  deleted"
+                    response=f"key {operands[key]} deleted"
             elif operands[command] == "show":
                         response = str(self.data)
             else:

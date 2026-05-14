@@ -6,14 +6,7 @@ from config import server_nodes
 from message_pass import*
 import ast
 
-ports_file = "address.json"
-with open(ports_file):
-    ports_format= open(ports_file)
-    ports = json.load(ports_format)
-    ports_format.close()
-
-host=ports["host"]
-port=ports["port"]
+# Configuration is now handled via CLI arguments
 
 class Server:
     def __init__(self,name,port=10000):
@@ -117,14 +110,15 @@ class Server:
                                     response = "Your info is as good as mine!"
                         elif string_operation.split(" ")[0] == "catch_up_logs":
                                 logs_to_append = ast.literal_eval(string_operation.split("catch_up_logs ")[1])
-                                [self.kvs.execute(log) for log in logs_to_append]
+                                for log in logs_to_append:
+                                    self.kvs.execute(log)
 
                                 response = "Caught up. Thanks!"
                         elif string_operation == "show_log":
                                 response = str(self.kvs.log)
                         elif string_operation == "youre_the_leader":
                             #self.broadcast('log_length?')
-                            self.broadcast(self.with_return_address('log_lenght?'))
+                            self.broadcast(self.with_return_address('log_length?'))
                             response="Brodcasting to other servers"
                         elif string_operation in [
                             "Caught up. Thanks!",
@@ -165,47 +159,20 @@ class Server:
                 
     def broadcast(self, message):
         for other_server_address in self.destination_addresses():
-            self.tell(message, to_server_address=other_server_address)
-    # def catch_up(self,key_value_store):
-    #     f = open("commands.txt", "r")
-    #     log = f.read()
-    #     f.close()
-    #     # with open("command.json",'r') as openfile:
-    #     #     read= json.load(openfile)
-            
+            try:
+                self.tell(message, to_server_address=other_server_address)
+            except Exception as e:
+                print(f"Failed to send to {other_server_address}: {e}")
 
-    #     for command in log.split('\n'):
-    #         key_value_store.execute(command)
-
-        
- 
-""" def run_server(): 
-    kvs = KeyValueStore()
-    catch_up(kvs)
+if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser(description="Start a KVS server node.")
+    parser.add_argument("--name", type=str, required=True, help="Unique name for this server node")
+    parser.add_argument("--port", type=int, default=10000, help="Port to listen on (default: 10000)")
     
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-    # Bind the socket to the port
-    server_address = ('localhost', 10000)
-    print('Starting up on {} port {}'.format(*server_address))
-    sock.bind(server_address)
-
-    # Listen for incoming connections
-    sock.listen(1)
-
-    while True:
-        # Wait for a connection
-        print('waiting for a connection')
-        connection, client_address = sock.accept()
-        print('connection from', client_address)
-            
-        threading.Thread(target=handel_client,args=(connection,kvs)).start()
-        
-
-
-
-
-run_server() """
-
-s=Server(name=" ")
-s.start()
+    args = parser.parse_args()
+    
+    # Clean up registry if it's the first node or handle differently?
+    # For now, let's just make sure we don't have empty names.
+    s = Server(name=args.name, port=args.port)
+    s.start()
