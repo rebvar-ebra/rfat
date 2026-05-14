@@ -32,7 +32,30 @@ class Client:
 
                 data = receive_message(self.sock)
                 if data:
-                    print(f"Response: {data.decode('utf-8')}")
+                    resp_str = data.decode('utf-8')
+                    if "@redirect " in resp_str:
+                        leader_name = resp_str.split("redirect ")[1]
+                        print(f"Redirected to leader: {leader_name}")
+                        # We need to find the address of this leader
+                        # For simplicity, we'll assume the registry is available or use a helper
+                        # In a real app, the server would send the IP/port
+                        from config import server_nodes
+                        nodes = server_nodes()
+                        if leader_name in nodes:
+                            self.sock.close()
+                            self.server_port = nodes[leader_name][1]
+                            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                            self.sock.connect(('localhost', self.server_port))
+                            print(f"Reconnected to {leader_name} on port {self.server_port}")
+                            # Retry the message
+                            send_message(self.sock, formatted_message.encode('utf-8'))
+                            data = receive_message(self.sock)
+                            if data:
+                                print(f"Response: {data.decode('utf-8')}")
+                        else:
+                            print(f"Leader {leader_name} not found in registry.")
+                    else:
+                        print(f"Response: {resp_str}")
             except EOFError:
                 break
             except Exception as e:
