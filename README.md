@@ -58,6 +58,19 @@ Connect the client to any of the running nodes:
 python3 start_client.py 10000
 ```
 
+### 4. Interactive Visualization
+
+A web-based interactive visualization is available to help understand the Raft consensus process visually.
+
+To view the visualization:
+1. Navigate to the `visualization/` directory.
+2. Open `index.html` in your web browser.
+
+The visualization allows you to:
+- See nodes transition between Follower, Candidate, and Leader states.
+- Observe heartbeat pulses and election timeouts.
+- Interactively force timeouts or stop nodes to see how the cluster recovers.
+
 ## ⌨️ Usage
 
 Once the client is connected, you can use the following commands:
@@ -80,6 +93,7 @@ Once the client is connected, you can use the following commands:
 - `config.py`: Utilities for reading cluster configuration.
 - `message_pass.py`: Helper functions for socket communication.
 - `start_server.py` / `start_client.py`: Entry point scripts for launching nodes and the client.
+- `visualization/`: Contains the web-based Raft consensus visualizer.
 
 ## ⚖️ License
 
